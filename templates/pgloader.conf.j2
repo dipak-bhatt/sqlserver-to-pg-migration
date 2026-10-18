@@ -1,0 +1,58 @@
+LOAD DATABASE
+  FROM mssql://{{SQL_USER}}:{{SQL_PASS}}@{{SQL_HOST}}/{{SQL_DATABASE}}
+  INTO postgresql://{{PG_USER}}:{{PG_PASS}}@{{PG_HOST}}/{{PG_DATABASE}}?sslmode=prefer
+
+WITH 
+  workers = 2,
+  concurrency = 2,
+  prefetch rows = 100,
+  batch rows = 1000,
+  batch size = 20MB
+
+-- Migration for tenant: {{ tenant_slug }} (ID: {{ tenant_id }})
+
+{% for tbl in tables %}
+{% if not tbl.exclude %}
+{%- if tbl.only %}INCLUDING ONLY {% else %}INCLUDING {% endif -%}
+TABLE NAMES {% if tbl.matching_regex %}MATCHING ~/{{ tbl.matching_regex }}/ {% else %}LIKE '{{ tbl.name }}' {% endif %}IN SCHEMA 'dbo'
+{% endif %}
+{% endfor %}
+
+ALTER SCHEMA 'dbo' RENAME TO 'public'
+
+{%- set tables_with_rename = tables | selectattr("rename") | list -%}
+{%- if tables_with_rename %}
+{%- for tbl in tables_with_rename %}
+ALTER TABLE NAMES MATCHING ~/(?i){{ tbl.name }}/ IN SCHEMA 'dbo' RENAME TO '{{ tbl.rename }}_temp_{{ tenant_slug }}'
+{% endfor -%}
+{% endif %}
+
+CAST type datetimeoffset to timestamptz drop default,
+     type datetime2 to timestamptz drop default,
+     type datetime to timestamptz drop default
+BEFORE LOAD DO
+$$
+ SET client_encoding TO 'UTF8';
+$$
+{%- if tables | selectattr("truncate") | list %}
+  TRUNCATE BEFORE LOAD{% endif -%}
+{%- set tables_with_casts = tables | selectattr("cast") | list -%}
+{%- if tables_with_casts %}
+  CAST (
+    {% for tbl in tables_with_casts %}
+      {% for c in tbl.cast %}
+    {{ c.column }} TO {{ c.type }}{% if not loop.last or not loop.parent.loop.last %},{% endif %}
+      {% endfor %}
+    {% endfor %}
+  ){% endif -%}
+{%- for tbl in tables %}
+  {%- if tbl.column_rename %}
+    {% for r in tbl.column_rename %}
+  WITH column name {{ r.old }} TO {{ r.new }}{% endfor %}
+  {%- endif %}
+{%- endfor %}
+{%- for tbl in tables %}
+  {%- if tbl.custom_sql %}
+  {{ tbl.custom_sql }}{% endif %}
+{%- endfor %}
+;

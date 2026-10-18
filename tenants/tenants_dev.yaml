@@ -1,0 +1,13 @@
+# PostgreSQL connection details
+pg_host: "localhost"
+pg_port: "5432"
+pg_database: "target_pg_db"
+
+# SQL Server connection details
+sql_host: "43.205.149.81"
+# sql_host: "43.205.149.81"
+sql_port: "1433"
+
+tenants:
+ - tenant_id: "f74c83b2-6019-482a-9e53-48184cb291f9"
+   slug: "dev"
