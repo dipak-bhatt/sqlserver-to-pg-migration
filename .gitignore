@@ -1,28 +1,10 @@
-logs/
-
-# Credential files - NEVER commit these
-.pg_service.conf
-*.pem
-*.key
-
-# Python
-*.pyc
-__pycache__/
-myenv/
-.venv/
-
-# Temp pgloader configs with credentials
-*.conf.temp
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# Backup files
-*.bak
-*_backup.ini
-*_backup.yaml
-
 # OS files
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*~

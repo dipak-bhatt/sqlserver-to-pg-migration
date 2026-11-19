@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+.vs/
+out/
+*.local.json
+TestResults/
+*.rsuser
+*.suo
+.idea/
+*.log
+coverage*.xml

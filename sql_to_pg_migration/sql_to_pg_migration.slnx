@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SqlToPg/SqlToPg.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SqlToPg.Tests/SqlToPg.Tests.csproj" />
+  </Folder>
+</Solution>

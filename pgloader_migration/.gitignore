@@ -1,0 +1,40 @@
+logs/
+
+# Credential files - NEVER commit these
+.pg_service.conf
+*.pem
+*.key
+
+# Python
+*.pyc
+__pycache__/
+myenv/
+.venv/
+
+# Temp pgloader configs with credentials
+*.conf.temp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+*_backup.ini
+*_backup.yaml
+
+# OS files
+.DS_Store
+# Real credentials - copy credentials_dev.ini.example and fill it in locally
+credentials*.ini
+!credentials*.ini.example
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+*.log

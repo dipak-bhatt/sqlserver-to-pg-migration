@@ -1,0 +1,56 @@
+{
+  // Mapping for the demo in this folder. Comments and trailing commas are allowed.
+  "sourceSchema": "dbo",
+  "targetSchema": "hr",
+  "sourceTimeZone": "Asia/Kathmandu",          // what a naive datetime meant (Windows or IANA id)
+  "scope": { "target": "tenant_id", "source": "TenantId" },
+
+  "tables": [
+    {
+      "source": "Country",
+      "target": "country",
+      "role": "shared",                         // reference data: filled only while empty, never cleared
+      "noScope": true,
+      "columns": [
+        { "source": "CountryId",   "target": "country_id" },
+        { "source": "CountryName", "target": "country_name" },
+        { "source": "IsoCode",     "target": "iso_code" }
+      ]
+    },
+    {
+      "source": "Department",
+      "target": "department",
+      "columns": [
+        { "source": "DepartmentID", "target": "department_id" },
+        { "source": "DeptName",     "target": "dept_name" },
+        { "source": "IsActive",     "target": "is_active" }
+      ]
+    },
+    {
+      "source": "Employee",
+      "target": "employee",
+      "where": "src.[IsDeleted] = 0",
+      "columns": [
+        { "source": "EmployeeID",   "target": "employee_id" },
+        { "source": "DepartmentID", "target": "department_id" },
+        { "source": "FullName",     "target": "full_name" },
+        { "expression": "LOWER(src.[Email])", "target": "email" },
+        { "source": "Salary",       "target": "salary" },
+        { "source": "JoinedOn",     "target": "joined_on" },
+        { "source": "UpdatedAt",    "target": "updated_at" },
+        { "source": "Photo",        "target": "photo" },
+        { "literal": "sqlserver",   "target": "source_system" }
+      ]
+    },
+    {
+      "source": "EmployeeAddress",
+      "target": "employee_address",
+      "columns": [
+        { "source": "EmployeeAddressID", "target": "employee_address_id" },
+        { "source": "EmployeeID",        "target": "employee_id" },
+        { "source": "City",              "target": "city" }
+      ],
+      "unmappedSource": [ "LegacyZone nvarchar(10)" ]
+    }
+  ]
+}
